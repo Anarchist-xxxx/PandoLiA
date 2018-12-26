@@ -3,20 +3,15 @@ package dao;
 import model.Post5ch;
 import model.Thread5ch;
 import app.LogParser;
-import org.sqlite.SQLiteException;
 
 import java.io.Closeable;
 import java.sql.*;
 
 public class LiADAO implements Closeable {
 
-    public static final String DBNAME = "data/database.db";
+    private static final String DBNAME = "data/database.db";
     private Connection con;
     private LogParser logParser;
-
-    public static final int ORDER_THREAD = 1;
-    public static final int ORDER_POST = 2;
-    public static final int ORDER_END = 3;
 
     public LiADAO() {
         con = getConnection();
