@@ -44,7 +44,7 @@ public class LiADAO implements Closeable {
             st.execute("CREATE TABLE `threads` ( `key` TEXT, `title` TEXT, `end` INTEGER, PRIMARY KEY(`key`) )");
 
         } catch (SQLException e) {
-            println("テーブル生成エラー？");
+            printErr("テーブル生成エラー？");
             analyzeSQLException(e);
         }
     }
@@ -65,9 +65,7 @@ public class LiADAO implements Closeable {
 
 
             if(pst.executeUpdate() > 0) {
-                print("DBにPostを挿入したよ");
-                print(" (" + post.getNumber() + ": " + post.getName() + " " + post.getMail() + " " + post.getTime() + " " + post.getUid() + " | ");
-                println(post.getComment() + ")");
+                insertedPost(post);
 
                 return true;
             }
@@ -89,8 +87,7 @@ public class LiADAO implements Closeable {
             pst.setString(2, th.getTitle());
 
             if(pst.executeUpdate() > 0) {
-                print("DBにThreadを挿入したよ");
-                println(" (" + th.getKey() + ": " + th.getTitle() + "(-1)");
+                insertedThread(th);
 
                 return true;
             }
@@ -126,7 +123,7 @@ public class LiADAO implements Closeable {
             pstInsert.setString(2, th.getKey());
 
             if(pstInsert.executeUpdate() > 0) {
-                println("Threadのendを更新したよ (end = " + th.getEnd() + ")");
+                updateThread(th);
                 return true;
             }
 
@@ -155,27 +152,35 @@ public class LiADAO implements Closeable {
         }
     }
 
-    private void println(String s) {
-        if(logParser != null) {
-            logParser.println(s);
-        } else {
-            System.out.println(s);
-        }
-    }
-
-    private void print(String s) {
-        if(logParser != null) {
-            logParser.print(s);
-        } else {
-            System.out.print(s);
-        }
-    }
-
     private void printErr(String s) {
         if(logParser != null) {
             logParser.printErr(s);
         } else {
             System.out.println(s);
+        }
+    }
+
+    private void insertedPost(Post5ch post) {
+        if(logParser != null) {
+            logParser.insertedPost(post);
+        } else {
+            System.out.println("DBにPostを挿入したよ (" + post.getNumber() + ": " + post.getName() + " " + post.getMail() + " " + post.getTime() + " " + post.getUid() + " | " + post.getComment() + ")");
+        }
+    }
+
+    private void insertedThread(Thread5ch th) {
+        if(logParser != null) {
+            logParser.insertedThread(th);
+        } else {
+            System.out.println("DBにThreadを挿入したよ (" + th.getKey() + ": " + th.getTitle() + " [" + th.getEnd() + "]");
+        }
+    }
+
+    private void updateThread(Thread5ch th) {
+        if(logParser != null) {
+            logParser.updatedThread(th);
+        } else {
+            System.out.println("Threadのendを更新したよ (end = " + th.getEnd() + ")");
         }
     }
 

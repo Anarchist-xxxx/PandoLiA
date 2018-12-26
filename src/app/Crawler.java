@@ -60,9 +60,9 @@ public class Crawler implements Runnable {
         } catch(UnkoException e) {
             //;;;
         } catch(ChinkoException e) {
-            println("Unknown error on Thread key: " + th.getKey());
+            printErr("おちんちんエラー on Thread key: " + th.getKey());
         } catch(InterruptedException e) {
-            println("Unknown error on key: " + th.getKey() + " Thread");
+            printErr("InterruptedException on key: " + th.getKey() + " Thread");
         }
 
         insertEnd();
@@ -72,7 +72,15 @@ public class Crawler implements Runnable {
         } else {
             System.out.println("Threadの巡回が終了したよ (" + th.getKey() + ": " + th.getTitle() + ")");
         }
-        
+
+    }
+
+    private void printErr(String s) {
+        if(logParser != null) {
+            logParser.printErr(s);
+        } else {
+            System.out.println(s);
+        }
     }
 
     public void setTh(Thread5ch th) {
@@ -121,21 +129,7 @@ public class Crawler implements Runnable {
         this.logParser = logParser;
     }
 
-    private void print(String s) {
-        if(logParser != null) {
-            logParser.print(s);
-        } else {
-            System.out.print(s);
-        }
-    }
 
-    private void println(String s) {
-        if(logParser != null) {
-            logParser.println(s);
-        } else {
-            System.out.println(s);
-        }
-    }
 
 
 }

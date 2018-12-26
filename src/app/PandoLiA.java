@@ -52,62 +52,86 @@ public class PandoLiA implements Runnable {
                     }
                 }
 
-                println("スレッド一覧を取得したよ ('" + threadList.size() + "'スレッド)");
+                loadThreadList(threadList);
 
+                //スレ一覧を全部まわす
                 for(Thread5ch th: threadList) {
+
+                    //そのスレッドのHashMapがない(=クロールが開始してないとき)
                     if(hm.get(th.getKey()) == null) {
                         hm.put(th.getKey(), true);
+
+                        //クローラーの準備
                         Crawler c = new Crawler();
                         c.setTh(th);
                         c.setLiADAO(dao);
+                        c.setLogParser(logParser);
+
+                        //Threadにして実行！
                         Thread thread = new Thread(c);
                         thread.setName(th.getKey() + ": " + th.getTitle());
                         thread.start();
                     }
                 }
 
+                //拡張for文の中でremoveするとこわれるからremove対象をつんでおくキューを用意するよ
                 ArrayList<String> removeList = new ArrayList<String>();
 
+                //hmのkeyを全部まわすよ
                 for(String key: hm.keySet()) {
                     boolean isAlive = false;
+
+                    //スレ一覧とてらしあわせてスレの生存チェックするよ
                     for(Thread5ch th: threadList) {
                         if(th.getKey().equals(key)) {
                             isAlive = true;
                             break;
                         }
                     }
+
+                    //スレがおちてたらremoveリストに追加！
                     if(!isAlive) {
                         removeList.add(key);
                     }
                 }
 
+                //おちたスレをクロール中スレ一覧からリムーブ！
                 for(String key: removeList) {
                     hm.remove(key);
                 }
 
+                //おねんね
                 Thread.sleep(1000 * 40);
 
             } catch (InterruptedException e) {
-                println("inter");
+                printErr(e);
             } catch (UnkoException e) {
-                println("unti");
+                printErr(e);
             }
         }
     }
 
-    private void println(String s) {
+    private void printErr(String s) {
         if(logParser != null) {
-            logParser.println(s);
+            logParser.printErr(s);
         } else {
             System.out.println(s);
         }
     }
 
-    private void print(String s) {
+    private void printErr(Exception e) {
         if(logParser != null) {
-            logParser.print(s);
+            logParser.printErr(e.getMessage());
         } else {
-            System.out.print(s);
+            e.printStackTrace();
+        }
+    }
+
+    private void loadThreadList(ArrayList<Thread5ch> threadList) {
+        if(logParser != null) {
+            logParser.loadThreadList(threadList);
+        } else {
+            System.out.println("スレッド一覧を取得したよ ('" + threadList.size() + "'スレッド)");
         }
     }
 
