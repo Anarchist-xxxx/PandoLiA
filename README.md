@@ -3,10 +3,13 @@
 穴実を巡回してレスをDBに保存するライブラリだよ
 
 ## 説明
-穴実のスレ一覧を定期的に巡回してスレッドをみつけたらそのスレッドの巡回を開始するよ  
-データベースはSQLite3で、ファイルはdata/database.dbにあるよ
+穴実のスレ一覧を定期的に巡回してスレッドをみつけたらそのスレッドの巡回を開始して、レスをDBに保存するよ
+データベースはSQLite3で、ファイルはdata/database.dbに保存するよ  
 
 ## 使用方法
+
+ライブラリとしてIDEなどでインポートしたりしてつかってね  
+
 * PandoLiAクラスをインスタンス化してrun()することで実行できるよ
 ```
 new PandoLiA().run();
@@ -22,10 +25,10 @@ t.start();
 * LogParserを実装したクラスをセットすることで自由にログを出力できるよ  
 LogParserがセットされてない場合System.out.print()で出力するよ
 ```
-TestClass tc = new TestClass(); //LogParserを実装したクラス
+TesLP tlp = new TesLP(); //LogParserを実装したクラス
 
 PandoLiA pandolia = new PandoLiA();
-pandolia.setLogParser(tc);
+pandolia.setLogParser(tlp);
 Thread t = new Thread(pandolia);
 t.start(); 
 ```
@@ -33,13 +36,16 @@ t.start();
 LogParser Interface
 ```
 public interface LogParser {
-    void print(String s);                        //ぜんぶ
-    void println(String s);                      //
-    void printErr(String s);                     //エラーとか
-    void addThread(Thread5ch th);                //Threadの巡回が開始したとき
-    void removeThread(Thread5ch th);             //Threadの巡回が終了したとき
+    void loadThreadList(ArrayList<Thread5ch> threadList); //スレッド一覧を取得したとき
+    void addThread(Thread5ch th);                         //スレッドの巡回が開始したとき
+    void removeThread(Thread5ch th);                      //スレッドの巡回が終了したとき
+    void insertedPost(Post5ch post);                      //DBにPostが挿入されたとき
+    void insertedThread(Thread5ch th);                    //DBにThreadが挿入されたとき
+    void updatedThread(Thread5ch th);                     //DBでThreadがUpdateされたとき
+    void printErr(String s);                              //エラーとか
 }
 ```
 
-## jarダウンロード
-ここからダウンロードしてね
+## ダウンロード(.jar)
+
+- [1.0.0](https://ux.getuploader.com/PandoLiA/download/1)
