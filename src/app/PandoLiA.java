@@ -20,12 +20,13 @@ public class PandoLiA implements Runnable {
     }
 
     public void run() {
-        println("run");
+
+        //ディレクトリとかはちゃんとあるかな
+        checkFiles();
 
         //DAOつくって
         LiADAO dao = new LiADAO();
         dao.setlogger(logParser);
-
 
         //J5chの用意
         J5ch j5 = new J5ch("agree", "liveanarchy");

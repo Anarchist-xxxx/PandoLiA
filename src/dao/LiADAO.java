@@ -49,7 +49,7 @@ public class LiADAO implements Closeable {
             st.execute("CREATE TABLE `threads` ( `key` TEXT, `title` TEXT, `end` INTEGER, PRIMARY KEY(`key`) )");
 
         } catch (SQLException e) {
-            logParser.println("テーブル生成エラー？");
+            println("テーブル生成エラー？");
             analyzeSQLException(e);
         }
     }
@@ -70,9 +70,9 @@ public class LiADAO implements Closeable {
 
 
             if(pst.executeUpdate() > 0) {
-                logParser.print("DBにPostを挿入したよ");
-                logParser.print(" (" + post.getNumber() + ": " + post.getName() + " " + post.getMail() + " " + post.getTime() + " " + post.getUid() + " | ");
-                logParser.println(post.getComment() + ")");
+                print("DBにPostを挿入したよ");
+                print(" (" + post.getNumber() + ": " + post.getName() + " " + post.getMail() + " " + post.getTime() + " " + post.getUid() + " | ");
+                println(post.getComment() + ")");
 
                 return true;
             }
@@ -94,8 +94,8 @@ public class LiADAO implements Closeable {
             pst.setString(2, th.getTitle());
 
             if(pst.executeUpdate() > 0) {
-                logParser.print("DBにThreadを挿入したよ");
-                logParser.println(" (" + th.getKey() + ": " + th.getTitle() + "(-1)");
+                print("DBにThreadを挿入したよ");
+                println(" (" + th.getKey() + ": " + th.getTitle() + "(-1)");
 
                 return true;
             }
@@ -131,7 +131,7 @@ public class LiADAO implements Closeable {
             pstInsert.setString(2, th.getKey());
 
             if(pstInsert.executeUpdate() > 0) {
-                logParser.println("Threadのendを更新したよ (end = " + th.getEnd() + ")");
+                println("Threadのendを更新したよ (end = " + th.getEnd() + ")");
                 return true;
             }
 
