@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Thread5ch {
     private String key;
     private String title;
-    private int end;
+    private int end = -1;
 
     public Thread5ch() {
     }

@@ -2,7 +2,8 @@ package dao;
 
 import model.Post5ch;
 import model.Thread5ch;
-import app.Logger;
+import app.LogParser;
+import org.sqlite.SQLiteException;
 
 import java.io.Closeable;
 import java.sql.*;
@@ -11,7 +12,7 @@ public class LiADAO implements Closeable {
 
     public static final String DBNAME = "data/database.db";
     private Connection con;
-    private Logger logger;
+    private LogParser logParser;
 
     public static final int ORDER_THREAD = 1;
     public static final int ORDER_POST = 2;
@@ -21,8 +22,8 @@ public class LiADAO implements Closeable {
         con = getConnection();
     }
 
-    public void setlogger(Logger logger) {
-        this.logger = logger;
+    public void setlogger(LogParser logParser) {
+        this.logParser = logParser;
     }
 
     private Connection getConnection() {
@@ -48,7 +49,7 @@ public class LiADAO implements Closeable {
             st.execute("CREATE TABLE `threads` ( `key` TEXT, `title` TEXT, `end` INTEGER, PRIMARY KEY(`key`) )");
 
         } catch (SQLException e) {
-            logger.println("テーブル生成エラー？");
+            logParser.println("テーブル生成エラー？");
             analyzeSQLException(e);
         }
     }
@@ -69,9 +70,9 @@ public class LiADAO implements Closeable {
 
 
             if(pst.executeUpdate() > 0) {
-                logger.print("DBにPostを挿入したよ");
-                logger.print(" (" + post.getNumber() + ": " + post.getName() + " " + post.getMail() + " " + post.getTime() + " " + post.getUid() + " | ");
-                logger.println(post.getComment() + ")");
+                logParser.print("DBにPostを挿入したよ");
+                logParser.print(" (" + post.getNumber() + ": " + post.getName() + " " + post.getMail() + " " + post.getTime() + " " + post.getUid() + " | ");
+                logParser.println(post.getComment() + ")");
 
                 return true;
             }
@@ -93,8 +94,8 @@ public class LiADAO implements Closeable {
             pst.setString(2, th.getTitle());
 
             if(pst.executeUpdate() > 0) {
-                logger.print("DBにThreadを挿入したよ");
-                logger.println(" (" + th.getKey() + ": " + th.getTitle() + "(-1)");
+                logParser.print("DBにThreadを挿入したよ");
+                logParser.println(" (" + th.getKey() + ": " + th.getTitle() + "(-1)");
 
                 return true;
             }
@@ -105,25 +106,32 @@ public class LiADAO implements Closeable {
         return false;
     }
 
-    public synchronized boolean insertEnd(Thread5ch th) {
-
-        String sqlCount = "select count(*) as end from posts where key = ?";
-
+    public synchronized int getThreadEnd(Thread5ch th) {
         try {
-            PreparedStatement pstCount = con.prepareStatement(sqlCount);
-            pstCount.setString(1, th.getKey());
+            String sql = "select count(*) as end from posts where key = ?";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, th.getKey());
 
-            ResultSet rs = pstCount.executeQuery();
+            ResultSet rs = pst.executeQuery();
 
-            int end = rs.getInt("end");
+            return rs.getInt("end");
 
+        } catch(SQLException e) {
+            analyzeSQLException(e);
+        }
+
+        return -1;
+    }
+
+    public synchronized boolean insertEnd(Thread5ch th) {
+        try {
             String sqlInsert = "update threads set end = ? where key = ?";
             PreparedStatement pstInsert = con.prepareStatement(sqlInsert);
-            pstInsert.setInt(1, end);
+            pstInsert.setInt(1, th.getEnd());
             pstInsert.setString(2, th.getKey());
 
             if(pstInsert.executeUpdate() > 0) {
-                logger.println("Threadのendを更新したよ (end = " + end + ")");
+                logParser.println("Threadのendを更新したよ (end = " + th.getEnd() + ")");
                 return true;
             }
 
@@ -136,9 +144,9 @@ public class LiADAO implements Closeable {
 
     private void analyzeSQLException(SQLException e) {
         if(e.getMessage().startsWith("[SQLITE_CONSTRAINT_PRIMARYKEY]")) {
-            logger.println("[SQLITE_CONSTRAINT_PRIMARYKEY] 主キー重複");
+            printErr("[SQLITE_CONSTRAINT_PRIMARYKEY] 主キー重複");
         } else if(e.getMessage().startsWith("[SQLITE_BUSY]")) {
-            logger.println("[SQLITE_BUSY] DBへの多重アクセス");
+            printErr("[SQLITE_BUSY] DBへの多重アクセス");
         } else {
             e.printStackTrace();
         }
@@ -153,21 +161,27 @@ public class LiADAO implements Closeable {
     }
 
     private void println(String s) {
-        if(logger != null) {
-            logger.println(s);
+        if(logParser != null) {
+            logParser.println(s);
         } else {
             System.out.println(s);
         }
     }
 
     private void print(String s) {
-        if(logger != null) {
-            logger.print(s);
+        if(logParser != null) {
+            logParser.print(s);
         } else {
             System.out.print(s);
         }
     }
 
-
+    private void printErr(String s) {
+        if(logParser != null) {
+            logParser.printErr(s);
+        } else {
+            System.out.println(s);
+        }
+    }
 
 }

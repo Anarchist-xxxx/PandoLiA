@@ -9,33 +9,38 @@ import model.Post5ch;
 import model.Thread5ch;
 
 public class Crawler implements Runnable {
+    private static final String APP = "JYW2J6wh9z8p8xjGFxO3M2JppGCyjQ";
+    private static final String SEC = "hO2QHdapzbqbTFOaJgZTKXgT2gWqYS";
+    private static final String AUTH_X_2CH_UA  = "JaneStyle/4.0.0";
+    private static final String USERAGENT = "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)";
+
+    private static final String HOST = "agree";
+    private static final String BBS = "liveanarchy";
+
     private Thread5ch th;
     private LiADAO dao;
-    private Logger logger;
+    private LogParser logParser;
 
     private int num;
 
     public void run() {
 
-        println("巡回を開始するよ (" + th.getKey() + ": " + th.getTitle() + ")");
+        if(logParser != null) {
+            logParser.addThread(th);
+        } else {
+            System.out.println("Threadの巡回を開始するよ (" + th.getKey() + ": " + th.getTitle() + ")");
+        }
 
+        //number
         num = 1;
 
-        String app = "JYW2J6wh9z8p8xjGFxO3M2JppGCyjQ";
-        String sec = "hO2QHdapzbqbTFOaJgZTKXgT2gWqYS";
-        String auth_x_2ch_ua  = "JaneStyle/4.0.0";
-        String useragent = "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)";
-
-        String host = "agree";
-        String bbs = "liveanarchy";
-
-        J5ch j5 = new J5ch(host, bbs);
+        J5ch j5 = new J5ch(HOST, BBS);
 
         insertThread();
 
         try {
-            j5.auth5chAPI(app, sec, useragent, auth_x_2ch_ua);
-            j5.setUserAgent(useragent);
+            j5.auth5chAPI(APP, SEC, USERAGENT, AUTH_X_2CH_UA);
+            j5.setUserAgent(USERAGENT);
 
             ResultSet rs = j5.get(th.getKey());
 
@@ -62,9 +67,12 @@ public class Crawler implements Runnable {
 
         insertEnd();
 
-        print("Threadの巡回が終了したよ");
-        println(" (key: " + th.getKey() + " title: " + th.getTitle() + ")");
-
+        if(logParser != null) {
+            logParser.removeThread(th);
+        } else {
+            System.out.println("Threadの巡回が終了したよ (" + th.getKey() + ": " + th.getTitle() + ")");
+        }
+        
     }
 
     public void setTh(Thread5ch th) {
@@ -109,23 +117,25 @@ public class Crawler implements Runnable {
         dao.insertEnd(th);
     }
 
-    public void setLogger(Logger logger) {
-        this.logger = logger;
+    public void setLogParser(LogParser logParser) {
+        this.logParser = logParser;
     }
 
     private void print(String s) {
-        if(logger != null) {
-            logger.print(s);
+        if(logParser != null) {
+            logParser.print(s);
         } else {
             System.out.print(s);
         }
     }
 
     private void println(String s) {
-        if(logger != null) {
-            logger.println(s);
+        if(logParser != null) {
+            logParser.println(s);
         } else {
             System.out.println(s);
         }
     }
+
+
 }
