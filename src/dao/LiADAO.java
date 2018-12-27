@@ -79,7 +79,7 @@ public class LiADAO implements Closeable {
 
     public synchronized boolean insertThread(Thread5ch th) {
 
-        String sql = "INSERT INTO threads(key, title, end) VALUES(?, ?, -1)";
+        String sql = "INSERT INTO threads(title, key, end) VALUES(?, ?, -1)";
 
         try {
             PreparedStatement pst = con.prepareStatement(sql);
