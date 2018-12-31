@@ -49,3 +49,7 @@ public interface LogParser {
 ## ダウンロード(.jar)
 
 - [1.0.0](https://github.com/Anarchist-xxxx/PandoLiA/releases/download/1.0.0/PandoLiA-1.0.0.jar)
+
+## Credit
+
+This software includes the work that is distributed in the Apache License 2.0
