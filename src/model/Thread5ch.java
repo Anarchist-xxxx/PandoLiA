@@ -56,6 +56,13 @@ public class Thread5ch {
         return new SimpleIntegerProperty(end);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj instanceof Thread5ch) {
+            Thread5ch target = (Thread5ch)obj;
 
-
+            return target.getKey().equals(this.key);
+        }
+        return false;
+    }
 }
