@@ -13,4 +13,5 @@ public interface LogParser {
     void insertedThread(Thread5ch th);
     void updatedThread(Thread5ch th);
     void printErr(String s);
+    void printErr(Exception e);
 }

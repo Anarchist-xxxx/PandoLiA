@@ -140,7 +140,7 @@ public class LiADAO implements Closeable {
         } else if(e.getMessage().startsWith("[SQLITE_BUSY]")) {
             printErr("[SQLITE_BUSY] DBへの多重アクセス");
         } else {
-            e.printStackTrace();
+            printErr(e);
         }
     }
 
@@ -148,7 +148,7 @@ public class LiADAO implements Closeable {
         try {
             con.close();
         } catch (SQLException e) {
-            System.err.println("err");
+            printErr(e);
         }
     }
 
@@ -157,6 +157,14 @@ public class LiADAO implements Closeable {
             logParser.printErr(s);
         } else {
             System.out.println(s);
+        }
+    }
+
+    private void printErr(Exception e) {
+        if(logParser != null) {
+            logParser.printErr(e);
+        } else {
+            e.printStackTrace();
         }
     }
 

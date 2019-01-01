@@ -121,7 +121,7 @@ public class PandoLiA implements Runnable {
 
     private void printErr(Exception e) {
         if(logParser != null) {
-            logParser.printErr(e.getMessage());
+            logParser.printErr(e);
         } else {
             e.printStackTrace();
         }
