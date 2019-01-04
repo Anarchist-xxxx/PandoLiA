@@ -48,7 +48,7 @@ public interface LogParser {
 
 ## ダウンロード(.jar)
 
-- [1.0.0](https://github.com/Anarchist-xxxx/PandoLiA/releases/download/1.0.0/PandoLiA-1.0.0.jar)
+- [1.0.4(latest)](https://github.com/Anarchist-xxxx/PandoLiA/releases/download/1.0.4/PandoLiA-1.0.4.jar)
 
 ## Credit
 
