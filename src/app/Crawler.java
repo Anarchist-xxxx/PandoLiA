@@ -65,6 +65,7 @@ public class Crawler implements Runnable {
             printErr("InterruptedException on key: " + th.getKey() + " Thread");
         }
 
+        this.th.setEnd(num);
         insertEnd();
 
         if(logParser != null) {
