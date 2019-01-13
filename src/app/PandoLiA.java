@@ -136,6 +136,8 @@ public class PandoLiA implements Runnable {
     }
 
     public void checkFiles() {
+        LiADAO dao = new LiADAO();
+
         File dataDir = new File("data/");
 
         if(!dataDir.exists()) {
@@ -145,11 +147,7 @@ public class PandoLiA implements Runnable {
         File db = new File("./data/database.db");
 
         if(!db.exists()) {
-            LiADAO tmp = new LiADAO();
-
-            tmp.createTable();
-
-            tmp.close();
+            dao.createTable();
 
             try {
                 Thread.sleep(5000);
@@ -159,9 +157,8 @@ public class PandoLiA implements Runnable {
         }
 
         //テーブルのカラムがたりなかったら追加するよ
-        LiADAO dao = new LiADAO();
         dao.fixColumn();
-        dao.close();
 
+        dao.close();
     }
 }

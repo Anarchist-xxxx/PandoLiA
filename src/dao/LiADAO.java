@@ -37,7 +37,7 @@ public class LiADAO implements Closeable {
         return result;
     }
 
-    public void createTable() {
+    public synchronized void createTable() {
         try {
             Statement st = con.createStatement();
 
@@ -55,7 +55,7 @@ public class LiADAO implements Closeable {
         }
     }
 
-    public void fixColumn() {
+    public synchronized void fixColumn() {
         try {
 
             Statement st = con.createStatement();
