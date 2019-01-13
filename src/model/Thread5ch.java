@@ -11,6 +11,8 @@ public class Thread5ch {
     private String key;
     private String title;
     private int end = -1;
+    private String startTime;
+    private String endTime;
 
     public Thread5ch() {
     }
@@ -44,6 +46,22 @@ public class Thread5ch {
         this.end = end;
     }
 
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
     public StringProperty keyProperty() {
         return new SimpleStringProperty(key);
     }
@@ -54,6 +72,14 @@ public class Thread5ch {
 
     public IntegerProperty endProperty() {
         return new SimpleIntegerProperty(end);
+    }
+
+    public StringProperty startTimeProperty() {
+        return new SimpleStringProperty(startTime);
+    }
+
+    public StringProperty endTimeProperty() {
+        return new SimpleStringProperty(endTime);
     }
 
     @Override

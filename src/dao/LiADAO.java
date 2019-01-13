@@ -6,6 +6,7 @@ import app.LogParser;
 
 import java.io.Closeable;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class LiADAO implements Closeable {
 
@@ -40,12 +41,46 @@ public class LiADAO implements Closeable {
         try {
             Statement st = con.createStatement();
 
-            st.execute("CREATE TABLE `posts` ( `key` TEXT, `number` INTEGER, `name` TEXT, `mail` TEXT, `time` TEXT, `comment` TEXT, `uid` TEXT, PRIMARY KEY(`key`,`number`) )");
-            st.execute("CREATE TABLE `threads` ( `key` TEXT, `title` TEXT, `end` INTEGER, PRIMARY KEY(`key`) )");
+            st.execute(
+                    "CREATE TABLE `threads` ( `key` TEXT, `title` TEXT, `end` INTEGER, `start_time` TEXT, `end_time` TEXT, PRIMARY KEY(`key`) )"
+            );
+
+            st.execute(
+                    "CREATE TABLE `posts` ( `key` TEXT, `number` INTEGER, `name` TEXT, `mail` TEXT, `time` TEXT, `comment` TEXT, `uid` TEXT, PRIMARY KEY(`key`,`number`) )"
+            );
 
         } catch (SQLException e) {
             printErr("テーブル生成エラー？");
             analyzeSQLException(e);
+        }
+    }
+
+    public void fixColumn() {
+        try {
+
+            Statement st = con.createStatement();
+
+            //threadsテーブルの行一覧を取得
+            ResultSet rs = st.executeQuery("PRAGMA TABLE_INFO('threads');");
+
+            ArrayList<String> names = new ArrayList<String>();
+
+            while(rs.next()) {
+                names.add(rs.getString("name"));
+            }
+
+            //threads.start_timeがなかったら生成
+            if(names.indexOf("start_time") == -1) {
+                st.execute("alter table threads add column start_time text");
+            }
+
+            //threads.end_timeがなかったら生成
+            if(names.indexOf("end_time") == -1) {
+                st.execute("alter table threads add column end_time text");
+            }
+
+        } catch(SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -120,6 +155,44 @@ public class LiADAO implements Closeable {
             String sqlInsert = "update threads set end = ? where key = ?";
             PreparedStatement pstInsert = con.prepareStatement(sqlInsert);
             pstInsert.setInt(1, th.getEnd());
+            pstInsert.setString(2, th.getKey());
+
+            if(pstInsert.executeUpdate() > 0) {
+                updateThread(th);
+                return true;
+            }
+
+        } catch(SQLException e) {
+            analyzeSQLException(e);
+        }
+
+        return false;
+    }
+
+    public synchronized boolean updateStartTime(Thread5ch th) {
+        try {
+            String sqlInsert = "update threads set start_time = ? where key = ?";
+            PreparedStatement pstInsert = con.prepareStatement(sqlInsert);
+            pstInsert.setString(1, th.getStartTime());
+            pstInsert.setString(2, th.getKey());
+
+            if(pstInsert.executeUpdate() > 0) {
+                updateThread(th);
+                return true;
+            }
+
+        } catch(SQLException e) {
+            analyzeSQLException(e);
+        }
+
+        return false;
+    }
+
+    public synchronized boolean updateEndTime(Thread5ch th) {
+        try {
+            String sqlInsert = "update threads set end_time = ? where key = ?";
+            PreparedStatement pstInsert = con.prepareStatement(sqlInsert);
+            pstInsert.setString(1, th.getEndTime());
             pstInsert.setString(2, th.getKey());
 
             if(pstInsert.executeUpdate() > 0) {

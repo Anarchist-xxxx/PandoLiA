@@ -32,19 +32,28 @@ public class Crawler implements Runnable {
         }
 
         //number
-        num = 1;
+        num = 0;
 
         J5ch j5 = new J5ch(HOST, BBS);
 
         insertThread();
 
+        ResultSet rs;
+
         try {
             j5.auth5chAPI(APP, SEC, USERAGENT, AUTH_X_2CH_UA);
             j5.setUserAgent(USERAGENT);
 
-            ResultSet rs = j5.get(th.getKey());
+            rs = j5.get(th.getKey());
 
-            insertPost(rs.toStringBody().split("\n"));
+            String[] que = rs.toStringBody().split("\n");
+
+            if(que.length > 0) {
+                th.setStartTime(formatRow(que[0]).getTime());
+                dao.updateStartTime(this.th);
+            }
+
+            insertPost(que);
 
             int size = rs.bytes;
 
@@ -66,6 +75,9 @@ public class Crawler implements Runnable {
         }
 
         this.th.setEnd(num);
+
+        dao.updateEndTime(this.th);
+
         insertEnd();
 
         if(logParser != null) {
@@ -98,28 +110,38 @@ public class Crawler implements Runnable {
 
     private void insertPost(String[] rawData) {
         for(String row: rawData) {
-            String[] splited = row.split("<>");
-
-            Post5ch post = new Post5ch();
-            post.setNumber(num);
-            post.setName(splited[0]);
-            post.setMail(splited[1]);
-
-            if(splited[2].lastIndexOf(" ID:") < 0) {
-                post.setTime(splited[2].trim());
-                post.setUid("");
-            } else {
-                String[] timeAndID = splited[2].split(" ID:");
-                post.setTime(timeAndID[0]);
-                post.setUid(timeAndID[1]);
-            }
-
-            post.setComment(splited[3]);
-
-            dao.insertPost(post, th);
-
             num++;
+            dao.insertPost(formatRow(row), th);
         }
+
+        //最後のtimeをendTimeにセットするよ
+        if(rawData.length > 0) {
+            this.th.setEndTime(formatRow(rawData[rawData.length - 1]).getTime());
+        }
+
+    }
+
+    //ResultSetから取得したStringの1行をpostに変換してかえすよ
+    private Post5ch formatRow(String row) {
+        String[] splited = row.split("<>");
+
+        Post5ch post = new Post5ch();
+        post.setNumber(num);
+        post.setName(splited[0]);
+        post.setMail(splited[1]);
+
+        if(splited[2].lastIndexOf(" ID:") < 0) {
+            post.setTime(splited[2].trim());
+            post.setUid("");
+        } else {
+            String[] timeAndID = splited[2].split(" ID:");
+            post.setTime(timeAndID[0]);
+            post.setUid(timeAndID[1]);
+        }
+
+        post.setComment(splited[3]);
+
+        return post;
     }
 
     private void insertEnd() {

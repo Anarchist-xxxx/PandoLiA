@@ -135,7 +135,7 @@ public class PandoLiA implements Runnable {
         }
     }
 
-    private void checkFiles() {
+    public void checkFiles() {
         File dataDir = new File("data/");
 
         if(!dataDir.exists()) {
@@ -157,5 +157,11 @@ public class PandoLiA implements Runnable {
                 e.printStackTrace();
             }
         }
+
+        //テーブルのカラムがたりなかったら追加するよ
+        LiADAO dao = new LiADAO();
+        dao.fixColumn();
+        dao.close();
+
     }
 }
