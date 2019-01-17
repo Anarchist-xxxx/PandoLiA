@@ -61,7 +61,7 @@ public class Thread5ch {
     public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
-
+    /*
     public StringProperty keyProperty() {
         return new SimpleStringProperty(key);
     }
@@ -81,6 +81,7 @@ public class Thread5ch {
     public StringProperty endTimeProperty() {
         return new SimpleStringProperty(endTime);
     }
+    */
 
     @Override
     public boolean equals(Object obj) {

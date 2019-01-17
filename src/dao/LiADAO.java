@@ -222,7 +222,7 @@ public class LiADAO implements Closeable {
             con.close();
         } catch (SQLException e) {
             printErr(e);
-        }
+        }//
     }
 
     private void printErr(String s) {
